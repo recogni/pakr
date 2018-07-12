@@ -7,7 +7,6 @@ import (
 	"crypto/sha1"
 	"encoding/binary"
 	"errors"
-	"fmt"
 	"io"
 )
 
@@ -92,6 +91,14 @@ func (idx *Index) IndexRecords() []*IndexRecord {
 	return idx.records
 }
 
+func (idx *Index) MountPoint() string {
+	return idx.mountPoint
+}
+
+func (idx *Index) RecordCount() uint32 {
+	return idx.recordCount
+}
+
 func (idx *Index) Unmarshal(buf *bytes.Reader) error {
 	var err error
 
@@ -147,7 +154,6 @@ func (ir *IndexRecord) Unmarshal(buf *bytes.Reader) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf(".. %s\n", ir.fileName)
 
 	ir.metadata = &Record{}
 	return ir.metadata.Unmarshal(buf)
@@ -222,10 +228,6 @@ func ParseIndexRecord(bs []byte) (*Index, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Printf("Pak file size: %d\n", n)
-	fmt.Printf("index offset:  %d\n", footer.offset)
-	fmt.Printf("index size:    %d\n", footer.size)
 
 	// Step 2 :: Read the index record.
 	if n < int(footer.offset+footer.size) {

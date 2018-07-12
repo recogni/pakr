@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path"
 
 	"github.com/recogni/pakr/pak"
 )
@@ -25,10 +26,9 @@ func main() {
 	fatalOnError(err)
 
 	index, err := pak.ParseIndexRecord(bs)
+	mp := index.MountPoint()
 
-	// Step 3 :: Walk each record.
 	for _, r := range index.IndexRecords() {
-		fmt.Printf("File: %s :: %#v\n", r.FileName(), r.Metadata())
-		fmt.Printf("%#v\n", r.Metadata().Hash())
+		fmt.Printf("%s\n", path.Join(mp, r.FileName()))
 	}
 }
